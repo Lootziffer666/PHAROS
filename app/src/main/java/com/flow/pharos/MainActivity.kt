@@ -5,8 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -52,14 +50,16 @@ class MainViewModel: ViewModel() {
   val ui = vm.state.value
   var tab by remember { mutableStateOf(0) }
   Scaffold(topBar = { TopAppBar(title = { Text("Pharos · ${BuildConfig.CHAT_ID}") }) }) { pad ->
-    Column(Modifier.fillMaxSize().padding(pad).verticalScroll(rememberScrollState())) {
+    Column(Modifier.fillMaxSize().padding(pad)) {
       TabRow(selectedTabIndex = tab) {
         listOf("Archive","Relations","Settings").forEachIndexed { i, label -> Tab(selected = tab == i, onClick = { tab = i }, text = { Text(label) }) }
       }
-      when(tab) {
-        0 -> ArchiveScreen(ui.archive.artifacts)
-        1 -> RelationsScreen(ui.archive.relations)
-        else -> SettingsScreen(ui)
+      Box(Modifier.weight(1f)) {
+        when(tab) {
+          0 -> ArchiveScreen(ui.archive.artifacts)
+          1 -> RelationsScreen(ui.archive.relations)
+          else -> SettingsScreen(ui)
+        }
       }
     }
   }

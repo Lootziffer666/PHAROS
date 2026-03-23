@@ -9,4 +9,4 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.flow.pharos.core.model.RelationEdge
 
-@Composable fun RelationsScreen(items:List<RelationEdge>) { LazyColumn(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { items(items) { item -> ElevatedCard { Column(Modifier.fillMaxWidth().padding(16.dp)) { Text("${item.fromId} → ${item.toId}", style = MaterialTheme.typography.titleSmall); Text(item.type); Text(item.note, style = MaterialTheme.typography.bodySmall) } } } } }
+@Composable fun RelationsScreen(items:List<RelationEdge>) { LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { items(items) { item -> ElevatedCard { Column(Modifier.fillMaxWidth().padding(16.dp)) { Text("${item.fromId} → ${item.toId}", style = MaterialTheme.typography.titleSmall); Text(item.type); Text(item.note, style = MaterialTheme.typography.bodySmall) } } } } }
