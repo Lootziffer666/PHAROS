@@ -1,4 +1,27 @@
-pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
-dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 rootProject.name = "Pharos"
-include(":app",":core:model",":core:storage",":core:llm",":feature:archive",":feature:relations",":feature:settings",":provider:perplexity",":provider:ollama",":provider:customopenai")
+include(
+    ":app",
+    ":core:model",
+    ":core:storage",
+    ":core:llm",
+    ":feature:archive",
+    ":feature:relations",
+    ":feature:settings",
+    ":provider:perplexity",
+    ":provider:ollama",
+    ":provider:customopenai",
+)

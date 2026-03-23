@@ -1,0 +1,67 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files — caches and build outputs, but NOT gradle-wrapper.jar
+# (gradle-wrapper.jar must be committed so developers can build without
+#  a pre-installed Gradle distribution — see https://docs.gradle.org/current/userguide/gradle_wrapper.html)
+.gradle/
+build/
+**/build/
+
+# Local configuration file (SDK path, API keys — never commit these)
+local.properties
+
+# Keystore files — uncomment if you keep them outside the repo
+#*.jks
+#*.keystore
+
+# IntelliJ / Android Studio
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/asLocal.xml
+.idea/compiler.xml
+.idea/libraries/
+.idea/.name
+.idea/modules.xml
+# Keep .idea/misc.xml and .idea/runConfigurations if you share run configs
+.DS_Store
+
+# Log files
+*.log
+
+# Android Studio captures folder
+captures/
+
+# External native build
+.externalNativeBuild/
+.cxx/
+
+# Google Services / Firebase — do NOT commit API config files
+google-services.json
+
+# Proguard
+proguard/
+
+# Navigation editor temp files
+.navigation/
+
+# Freeline (legacy hot-swap tool)
+freeline.py
+freeline/
+freeline_project_description.json
