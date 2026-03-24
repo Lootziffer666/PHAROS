@@ -83,6 +83,15 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
+    // PDFBox
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    // DocumentFile
+    implementation("androidx.documentfile:documentfile:1.0.1")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // Material (View-based) — required for Theme.Material3.DayNight.NoActionBar in AndroidManifest
     implementation("com.google.android.material:material:1.12.0")
 }

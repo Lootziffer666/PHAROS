@@ -1,8 +1,11 @@
 package com.flow.pharos.provider.perplexity
 
+import com.flow.pharos.core.llm.AiApiProvider
 import com.flow.pharos.core.llm.ChatRequest
 import com.flow.pharos.core.llm.ChatResponse
 import com.flow.pharos.core.llm.LlmGateway
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -11,12 +14,16 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class PerplexityProvider(
     private val apiKey: String,
     private val httpClient: OkHttpClient = defaultClient(),
-) : LlmGateway {
+) : LlmGateway, AiApiProvider {
+
+    override val name: String = "Perplexity"
+    private val gson = Gson()
 
     override suspend fun ping(): Result<String> {
         if (apiKey.isBlank()) return Result.failure(IllegalStateException("Missing Perplexity API key"))
@@ -48,6 +55,73 @@ class PerplexityProvider(
                 parseResponse(body, request.model)
             }
         }
+
+    override suspend fun testApiKey(apiKey: String): String {
+        val body = buildAnalysisRequestBody("You are a test assistant.", "Reply with exactly: {\"status\": \"ok\"}")
+        val req = Request.Builder()
+            .url("https://api.perplexity.ai/chat/completions")
+            .addHeader("Authorization", "Bearer $apiKey")
+            .addHeader("Content-Type", "application/json")
+            .post(body.toRequestBody("application/json; charset=utf-8".toMediaType()))
+            .build()
+        return withContext(Dispatchers.IO) {
+            httpClient.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) {
+                    val err = resp.body?.string() ?: ""
+                    throw IOException("API test failed (HTTP ${resp.code}): $err")
+                }
+                val respBody = resp.body?.string() ?: throw IOException("Empty response")
+                extractContent(respBody)
+            }
+        }
+    }
+
+    override suspend fun analyzeDocument(
+        apiKey: String, fileName: String, mimeType: String, textContent: String
+    ): String {
+        val systemPrompt = "You are a document analysis assistant. Analyze the provided document and return ONLY a valid JSON object (no markdown, no code fences) with this exact structure:\n{\"topics\":[\"topic1\"],\"project_suggestions\":[\"project1\"],\"summary\":\"summary\",\"action_items\":[\"action1\"],\"confidence\":0.85}\nRules: topics: 2-6 short keywords; project_suggestions: 1-3 project names; summary: 2-4 sentences; action_items: 0-5 items; confidence: 0.0-1.0. Return ONLY the JSON."
+        val userPrompt = "Analyze this document:\n\nFilename: $fileName\nType: $mimeType\n\nContent:\n$textContent"
+        val body = buildAnalysisRequestBody(systemPrompt, userPrompt)
+        val req = Request.Builder()
+            .url("https://api.perplexity.ai/chat/completions")
+            .addHeader("Authorization", "Bearer $apiKey")
+            .addHeader("Content-Type", "application/json")
+            .post(body.toRequestBody("application/json; charset=utf-8".toMediaType()))
+            .build()
+        return withContext(Dispatchers.IO) {
+            httpClient.newCall(req).execute().use { resp ->
+                if (!resp.isSuccessful) {
+                    val err = resp.body?.string() ?: ""
+                    throw IOException("API call failed (HTTP ${resp.code}): $err")
+                }
+                val respBody = resp.body?.string() ?: throw IOException("Empty response")
+                extractContent(respBody)
+            }
+        }
+    }
+
+    private fun buildAnalysisRequestBody(systemPrompt: String, userPrompt: String): String {
+        val body = JsonObject().apply {
+            addProperty("model", "sonar")
+            add("messages", gson.toJsonTree(listOf(
+                mapOf("role" to "system", "content" to systemPrompt),
+                mapOf("role" to "user", "content" to userPrompt)
+            )))
+            addProperty("max_tokens", 1024)
+            addProperty("temperature", 0.1)
+        }
+        return gson.toJson(body)
+    }
+
+    private fun extractContent(responseBody: String): String {
+        return try {
+            val json = gson.fromJson(responseBody, JsonObject::class.java)
+            val choices = json.getAsJsonArray("choices")
+            if (choices != null && choices.isNotEmpty()) {
+                choices[0].asJsonObject.getAsJsonObject("message").get("content").asString
+            } else responseBody
+        } catch (e: Exception) { responseBody }
+    }
 
     companion object {
         private val JSON = "application/json".toMediaType()
