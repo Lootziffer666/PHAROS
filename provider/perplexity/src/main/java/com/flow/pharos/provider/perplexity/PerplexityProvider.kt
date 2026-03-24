@@ -36,7 +36,9 @@ class PerplexityProvider(
                 .url("https://api.perplexity.ai/models")
                 .header("Authorization", "Bearer $apiKey")
                 .build()
-            val body = httpClient.newCall(request).execute().use { it.body!!.string() }
+            val body = httpClient.newCall(request).execute().use {
+                it.body?.string() ?: throw IOException("Empty response body")
+            }
             val arr = JSONObject(body).getJSONArray("data")
             (0 until arr.length()).map { arr.getJSONObject(it).getString("id") }
         }
@@ -51,7 +53,9 @@ class PerplexityProvider(
                     .header("Authorization", "Bearer $apiKey")
                     .post(payload.toString().toRequestBody(JSON))
                     .build()
-                val body = httpClient.newCall(req).execute().use { it.body!!.string() }
+                val body = httpClient.newCall(req).execute().use {
+                    it.body?.string() ?: throw IOException("Empty response body")
+                }
                 parseResponse(body, request.model)
             }
         }
