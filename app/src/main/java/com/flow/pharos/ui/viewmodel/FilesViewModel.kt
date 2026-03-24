@@ -35,10 +35,19 @@ class FilesViewModel @Inject constructor(
         viewModelScope.launch { _selectedFileAnalysis.value = analysisRepository.getLatestAnalysisForFile(fileId) }
     }
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
     fun analyzeSingleFile(fileId: String) {
         viewModelScope.launch {
             _isAnalyzing.value = true
-            try { analysisUseCase.analyzeSingleFile(fileId); loadFileAnalysis(fileId) } catch (_: Exception) { }
+            _errorMessage.value = null
+            try {
+                analysisUseCase.analyzeSingleFile(fileId)
+                loadFileAnalysis(fileId)
+            } catch (e: Exception) {
+                _errorMessage.value = "Analysis failed: ${e.message}"
+            }
             _isAnalyzing.value = false
         }
     }

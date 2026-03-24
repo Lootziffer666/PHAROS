@@ -32,11 +32,13 @@ class ProjectsViewModel @Inject constructor(
 
     fun loadProjectFiles(projectId: String) {
         viewModelScope.launch {
-            val files = projectRepository.getFilesForProjectList(projectId)
-            _projectFiles.value = files
-            val analyses = mutableMapOf<String, AnalysisEntity>()
-            files.forEach { file -> analysisRepository.getLatestAnalysisForFile(file.id)?.let { analyses[file.id] = it } }
-            _fileAnalyses.value = analyses
+            try {
+                val files = projectRepository.getFilesForProjectList(projectId)
+                _projectFiles.value = files
+                val analyses = mutableMapOf<String, AnalysisEntity>()
+                files.forEach { file -> analysisRepository.getLatestAnalysisForFile(file.id)?.let { analyses[file.id] = it } }
+                _fileAnalyses.value = analyses
+            } catch (_: Exception) { }
         }
     }
 }

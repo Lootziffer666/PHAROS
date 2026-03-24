@@ -59,7 +59,9 @@ class CustomOpenAiProvider(
                     .build()
                 val body = httpClient.newCall(req).execute().use { it.body!!.string() }
                 val root = JSONObject(body)
-                val choice = root.getJSONArray("choices").getJSONObject(0)
+                val choices = root.getJSONArray("choices")
+                if (choices.length() == 0) throw IllegalStateException("No choices in API response")
+                val choice = choices.getJSONObject(0)
                 val usage = root.optJSONObject("usage")
                 ChatResponse(
                     content = choice.getJSONObject("message").getString("content"),

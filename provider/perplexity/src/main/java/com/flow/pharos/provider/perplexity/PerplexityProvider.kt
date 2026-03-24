@@ -147,8 +147,9 @@ class PerplexityProvider(
 
         private fun parseResponse(json: String, fallbackModel: String): ChatResponse {
             val root = JSONObject(json)
-            val content = root.getJSONArray("choices")
-                .getJSONObject(0)
+            val choices = root.getJSONArray("choices")
+            if (choices.length() == 0) throw IllegalStateException("No choices in API response")
+            val content = choices.getJSONObject(0)
                 .getJSONObject("message")
                 .getString("content")
             val usage = root.optJSONObject("usage")

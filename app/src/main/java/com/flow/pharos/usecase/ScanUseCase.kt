@@ -101,7 +101,7 @@ class ScanUseCase(
         queue.add(directory)
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
-            current.listFiles().forEach { file -> if (file.isDirectory) queue.add(file) else if (file.isFile) result.add(file) }
+            (current.listFiles() ?: emptyArray()).forEach { file -> if (file.isDirectory) queue.add(file) else if (file.isFile) result.add(file) }
         }
         return result
     }

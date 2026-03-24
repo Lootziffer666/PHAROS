@@ -64,8 +64,10 @@ class OllamaProvider(
                     .build()
                 val body = httpClient.newCall(req).execute().use { it.body!!.string() }
                 val root = JSONObject(body)
+                val message = root.optJSONObject("message")
+                    ?: throw IllegalStateException("No message in Ollama response")
                 ChatResponse(
-                    content = root.getJSONObject("message").getString("content"),
+                    content = message.getString("content"),
                     model = root.optString("model", request.model),
                     promptTokens = root.optInt("prompt_eval_count", 0),
                     completionTokens = root.optInt("eval_count", 0),

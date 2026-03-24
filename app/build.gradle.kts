@@ -90,9 +90,6 @@ dependencies {
     // DocumentFile
     implementation("androidx.documentfile:documentfile:1.0.1")
 
-    // Room (needed to access RoomDatabase supertype of PharosDatabase in AppModule)
-    implementation("androidx.room:room-runtime:2.6.1")
-
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
 

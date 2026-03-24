@@ -21,11 +21,15 @@ class FolderViewModel @Inject constructor(
 
     fun addFolder(treeUri: String, displayName: String) {
         viewModelScope.launch {
-            folderRepository.insertFolder(FolderEntity(id = UUID.randomUUID().toString(), treeUri = treeUri, displayName = displayName))
+            try {
+                folderRepository.insertFolder(FolderEntity(id = UUID.randomUUID().toString(), treeUri = treeUri, displayName = displayName))
+            } catch (_: Exception) { }
         }
     }
 
     fun removeFolder(folderId: String) {
-        viewModelScope.launch { folderRepository.deleteFolder(folderId) }
+        viewModelScope.launch {
+            try { folderRepository.deleteFolder(folderId) } catch (_: Exception) { }
+        }
     }
 }
