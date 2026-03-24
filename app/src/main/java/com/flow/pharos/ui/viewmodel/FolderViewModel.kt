@@ -1,5 +1,6 @@
 package com.flow.pharos.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flow.pharos.core.model.entity.FolderEntity
@@ -23,13 +24,17 @@ class FolderViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 folderRepository.insertFolder(FolderEntity(id = UUID.randomUUID().toString(), treeUri = treeUri, displayName = displayName))
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                Log.e("FolderViewModel", "Failed to add folder", e)
+            }
         }
     }
 
     fun removeFolder(folderId: String) {
         viewModelScope.launch {
-            try { folderRepository.deleteFolder(folderId) } catch (_: Exception) { }
+            try { folderRepository.deleteFolder(folderId) } catch (e: Exception) {
+                Log.e("FolderViewModel", "Failed to remove folder", e)
+            }
         }
     }
 }
