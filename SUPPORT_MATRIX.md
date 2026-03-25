@@ -30,14 +30,28 @@ Chat-ID: CH-20260308-04
 - **Unit Tests** – 28 tests (JsonParser, FilenameSanitizer, ProjectClustering)
 - **Hilt DI** – all new dependencies wired via Dagger Hilt @Module
 
+## Implemented (Phase 3 – Sync & Windows Desktop)
+- **`core/sync` module** – pure Kotlin/JVM library with SHA-256 manifest-based sync protocol
+  - `SyncManifest` / `ManifestEntry` – JSON-serializable file manifest (path, hash, size, timestamp)
+  - `ManifestComparator` – compares two manifests → `SyncDiff` (added, modified, deleted, unchanged)
+  - `FileHasher` – SHA-256 hashing for `File`, `InputStream`, and `ByteArray`
+  - `SyncEngine` – generates manifests, reads/writes `pharos_manifest.json`, one-way sync
+  - **24 unit tests** (ManifestComparator, FileHasher, SyncEngine)
+- **`desktop/` module** – Compose for Desktop (Windows) application
+  - Folder picker (local + remote/shared)
+  - Generate & display manifest
+  - Compare two folders → visual diff (new / modified / deleted / unchanged)
+  - One-click sync from shared folder to local
+- **CI/CD** – GitHub Actions builds both APK (Ubuntu) and Windows desktop JAR (Windows runner)
+- **Android ↔ Windows sync protocol** – both platforms use the same `pharos_manifest.json` format and `core/sync` comparison logic
+
 ## Fixed
 - LazyColumn nested inside verticalScroll Column (unbounded-height runtime crash)
 - SettingsScreen now scrolls independently via verticalScroll
 - AndroidManifest: added android:icon and android:supportsRtl
 
 ## Missing / partial
-- no cloud sync yet (local folder sync via SAF is implemented)
+- no cloud sync yet (local folder sync via SAF is implemented, shared-folder manifest sync is implemented)
 - no graph canvas yet
-- no Windows/Desktop build yet (see ROADMAP_WINDOWS_SYNC.md)
 - no contradiction detection yet (planned)
 - no topic clustering rules yet (AI-driven clustering is implemented)

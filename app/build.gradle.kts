@@ -52,6 +52,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:storage"))
+    implementation(project(":core:sync"))
     implementation(project(":core:llm"))
     implementation(project(":feature:archive"))
     implementation(project(":feature:relations"))

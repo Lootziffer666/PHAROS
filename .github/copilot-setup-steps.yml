@@ -27,3 +27,4 @@ steps:
     run: |
       chmod +x gradlew
       ./gradlew assembleDebug --no-daemon
+      ./gradlew :core:sync:test --no-daemon

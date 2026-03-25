@@ -17,6 +17,7 @@ include(
     ":app",
     ":core:model",
     ":core:storage",
+    ":core:sync",
     ":core:llm",
     ":feature:archive",
     ":feature:relations",
@@ -24,4 +25,5 @@ include(
     ":provider:perplexity",
     ":provider:ollama",
     ":provider:customopenai",
+    ":desktop",
 )
