@@ -45,6 +45,28 @@ Chat-ID: CH-20260308-04
 - **CI/CD** – GitHub Actions builds both APK (Ubuntu) and Windows desktop JAR (Windows runner)
 - **Android ↔ Windows sync protocol** – both platforms use the same `pharos_manifest.json` format and `core/sync` comparison logic
 
+## Implemented (Phase 4 – Truth Model & Cross-Platform Parity)
+- **`core/truth` module** – pure Kotlin/JVM shared truth model for provenance-first lighthouse semantics
+  - `ProvenanceLevel` – semantic layers: SOURCE, EXTRACTION, DERIVATION, HYPOTHESIS
+  - `VerificationState` – sealed class: Unverified, Confirmed, Disputed, Outdated
+  - `ConflictRecord` – explicit conflict surfacing with resolution tracking
+  - `TrustMetadata` – freshness, staleness detection, safe-to-resume classification
+  - `ProvenanceRecord` – links claims to source evidence with derivation chains
+  - `TrustAssessment<T>` – wraps any value with full trust context and trust labels
+  - `ProvenanceClassifier` – classifies content (AI analysis, file scans, clustering) into provenance levels
+- **Sync conflict detection** (`SyncConflictDetector`) – detects when both devices modify the same file, surfaces conflicts with provenance metadata instead of silently resolving
+- **Cross-platform parity** – `core/truth` is pure JVM, shared identically by Android app and Desktop client
+- **Lighthouse tests** – 62+ unit tests covering:
+  - Provenance level ordering and boundary semantics
+  - Verification state transitions
+  - Conflict detection, surfacing, and resolution
+  - Trust metadata freshness and staleness
+  - Provenance record source-backing and verification needs
+  - Trust assessment reliability, uncertainty, and label consistency
+  - AI content classification (never presented as source fact)
+  - Sync conflict detection with provenance metadata
+  - Platform parity scenarios (resume after days away, consistent trust labels)
+
 ## Fixed
 - LazyColumn nested inside verticalScroll Column (unbounded-height runtime crash)
 - SettingsScreen now scrolls independently via verticalScroll
@@ -53,5 +75,5 @@ Chat-ID: CH-20260308-04
 ## Missing / partial
 - no cloud sync yet (local folder sync via SAF is implemented, shared-folder manifest sync is implemented)
 - no graph canvas yet
-- no contradiction detection yet (planned)
-- no topic clustering rules yet (AI-driven clustering is implemented)
+- contradiction detection: conflict model in place (`ConflictRecord`, `SyncConflictDetector`), UI surfacing pending
+- no topic clustering rules yet (AI-driven clustering is implemented, now classified as DERIVATION via ProvenanceClassifier)
