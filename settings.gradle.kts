@@ -18,6 +18,7 @@ include(
     ":core:model",
     ":core:storage",
     ":core:sync",
+    ":core:truth",
     ":core:llm",
     ":feature:archive",
     ":feature:relations",
