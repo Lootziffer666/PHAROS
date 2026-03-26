@@ -18,7 +18,7 @@ Beide Projekte wurden mit demselben Masterprompt erzeugt.
 | **Architektur** | MVVM, Multi-Module Gradle | Flat-Script-CLI + statischer Web-Client |
 | **LOC (ca.)** | ~1 050 Kotlin | ~350 Python + ~100 JS + ~150 HTML/CSS |
 | **LLM-Anbindung** | 3 Provider (Perplexity, Ollama, Custom OpenAI) | Vorgesehen in UI, nicht implementiert |
-| **Tests** | Keine | 2 Unit-Tests (Python unittest) |
+| **Tests** | 132+ Unit-Tests (app + sync + truth) | 2 Unit-Tests (Python unittest) |
 | **CI/CD** | GitHub Actions → APK-Artifact | Keine |
 | **Sync** | Keiner | Google Drive via rclone + Watch-Mode |
 | **Dokumentation** | README + SUPPORT_MATRIX + LOCAL_LLM_API_SPEC | README (ausführlicher) |
@@ -42,7 +42,7 @@ Beide Projekte wurden mit demselben Masterprompt erzeugt.
 | Android-App (nativ) | ✅ Jetpack Compose | ⚠️ WebView-Shell | Pharos |
 | Dependency-Injection | ✅ Hilt/Dagger | ❌ | Pharos |
 | Modulares Build-System | ✅ 9 Gradle-Module | ❌ (Flat Scripts) | Pharos |
-| Tests | ❌ | ✅ (2 Unit-Tests) | DocuPilot |
+| Tests | ✅ 132+ Unit-Tests | ✅ (2 Unit-Tests) | Pharos |
 | CI/CD Pipeline | ✅ GitHub Actions | ❌ | Pharos |
 | Verschlüsselte Key-Speicherung | ⚠️ BuildConfig (kompilierzeit) | ❌ | Pharos |
 | Datei-Scanner (Filesystem) | ❌ (geplant) | ✅ rglob-basiert | DocuPilot |
@@ -65,18 +65,18 @@ Beide Projekte wurden mit demselben Masterprompt erzeugt.
 
 ---
 
-## 4 Schwächen von Pharos (Cons)
+## 4 Schwächen von Pharos (Stand: Phase 4 – inzwischen teilweise behoben)
 
-1. **Keine Tests** – Kein einziger Unit- oder UI-Test vorhanden.
-2. **Kein Datei-Scanner** – Kann noch keine Dateien vom Gerät lesen oder indexieren.
-3. **Kein Sync** – Weder lokaler Sync noch Cloud-Anbindung.
-4. **Nur Android** – Kein Desktop/Windows-Build, keine Cross-Platform-Strategie.
+1. ~~**Keine Tests**~~ – **Behoben**: 132+ Unit-Tests (28 app + 33 sync + 71 truth).
+2. ~~**Kein Datei-Scanner**~~ – **Behoben**: SAF-basierter Datei-Scanner mit SHA-256 Delta-Erkennung.
+3. ~~**Kein Sync**~~ – **Teilweise behoben**: Lokaler Ordner-Sync implementiert; Cloud-Sync (Google Drive) fehlt noch.
+4. ~~**Nur Android**~~ – **Behoben**: Windows Desktop-Client via Compose for Desktop.
 5. **LLM-Aufrufe nur Ping** – Chat-Completions sind implementiert, werden aber nirgends aufgerufen.
-6. **Kein Topic-Clustering** – Dokumente werden nicht automatisch klassifiziert.
-7. **Kein Delta-Tracking** – Keine Erkennung von Änderungen an Dokumenten.
-8. **Seed-Daten statisch** – Archive und Relations kommen aus `SeedRepository`, nicht aus echtem Scan.
+6. ~~**Kein Topic-Clustering**~~ – **Behoben**: AI-gestütztes Clustering via `ProjectClusteringUseCase`.
+7. ~~**Kein Delta-Tracking**~~ – **Behoben**: SHA-256 Manifest in `core/sync`.
+8. ~~**Seed-Daten statisch**~~ – **Behoben**: Echter SAF-Scan ersetzt Seed-Daten.
 9. **Kein Web-UI** – Keine browser-basierte Alternative für Desktop-Nutzer.
-10. **Manuelles JSON-Parsing** – Nutzt `org.json` statt typsicherer Alternativen wie Gson/Moshi/kotlinx.serialization.
+10. **Manuelles JSON-Parsing** – Nutzt Gson; kotlinx.serialization wäre KMP-konformer.
 
 ---
 
@@ -138,12 +138,12 @@ Beide Projekte wurden mit demselben Masterprompt erzeugt.
 
 ## 8 Fazit
 
-**Pharos** hat die bessere **Architektur und das stärkere Android-Fundament** – modularer Aufbau, native UI, LLM-Abstraktion, CI/CD. Es ist bereit für Erweiterung.
+**Pharos** hat die bessere **Architektur und das stärkere Fundament** – modularer Aufbau, native Android-UI, LLM-Abstraktion, CI/CD. Mit Phase 2–4 hat Pharos die ursprünglichen Hauptschwächen (keine Tests, kein Datei-Scanner, kein Sync, nur Android) behoben.
 
-**DocuPilot** hat den **besseren Feature-Umfang im Scan- und Sync-Bereich** – Datei-Scanner, Drive-Sync, Delta-Tracking, Topic-Clustering und Tests. Es ist sofort nutzbar als CLI-Tool.
+**DocuPilot** hat den Vorteil der **plattformunabhängigen Python-CLI** und des integrierten **Google Drive Sync**. Es bleibt sofort nutzbar ohne Build-Schritt.
 
-**Empfehlung:** Die DocuPilot-Features (Scanner, Sync, Delta-Tracking, Tests) in die Pharos-Architektur integrieren. So entsteht ein Projekt, das die Stärken beider Ansätze vereint.
+**Stand heute:** Pharos hat den Feature-Rückstand in den meisten Bereichen aufgeholt und übertrifft DocuPilot in Architektur, Tests, nativer UI und Windows-Desktop-Support. Verbleibende Lücken sind Cloud-Sync (Google Drive), LLM-Chat-Completions und Widerspruchs-Erkennung im UI.
 
 ---
 
-*Erstellt: 2026-03-24 | Chat-ID: CH-20260308-04*
+*Erstellt: 2026-03-24 | Aktualisiert: 2026-03-26 | Chat-ID: CH-20260308-04*

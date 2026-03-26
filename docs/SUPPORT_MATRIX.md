@@ -36,7 +36,7 @@ Chat-ID: CH-20260308-04
   - `ManifestComparator` – compares two manifests → `SyncDiff` (added, modified, deleted, unchanged)
   - `FileHasher` – SHA-256 hashing for `File`, `InputStream`, and `ByteArray`
   - `SyncEngine` – generates manifests, reads/writes `pharos_manifest.json`, one-way sync
-  - **24 unit tests** (ManifestComparator, FileHasher, SyncEngine)
+  - **33 unit tests** (ManifestComparator, FileHasher, SyncEngine, SyncConflictDetector)
 - **`desktop/` module** – Compose for Desktop (Windows) application
   - Folder picker (local + remote/shared)
   - Generate & display manifest
