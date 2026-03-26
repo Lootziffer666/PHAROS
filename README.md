@@ -113,9 +113,9 @@ Provenance-first truth model for transparent data lineage:
 
 ## CI/CD
 
-GitHub Actions builds both targets on every push:
-- **Ubuntu runner** → Android Debug APK artifact ##deactivated right now
-- **Windows runner** → Desktop JAR artifact  ##deactivated right now
+GitHub Actions workflow [`build-apk-desktop.yml`](.github/workflows/build-apk-desktop.yml) builds both targets on every push and pull request:
+- **Ubuntu runner** → Android Debug APK artifact (`pharos-debug`) + unit tests
+- **Windows runner** → Desktop uber JAR artifact (`pharos-desktop-windows`) + `core:sync` tests
 
 ## Docs
 

@@ -13,7 +13,7 @@ class CloudSyncClientTest {
     fun `downloadManifest fetches manifest JSON`() {
         val manifest = SyncManifest(
             deviceId = "cloud",
-            generatedAt = 123L,
+            createdAt = 123L,
             entries = listOf(
                 ManifestEntry("a.txt", "abc", 10, 111L)
             )
@@ -21,7 +21,7 @@ class CloudSyncClientTest {
 
         val server = HttpServer.create(InetSocketAddress(0), 0)
         server.createContext("/manifest") { exchange ->
-            val json = """{"deviceId":"cloud","generatedAt":123,"entries":[{"relativePath":"a.txt","sha256":"abc","size":10,"lastModified":111}]}"""
+            val json = """{"version":1,"deviceId":"cloud","createdAt":123,"entries":[{"relativePath":"a.txt","sha256":"abc","size":10,"lastModified":111}]}"""
             exchange.sendResponseHeaders(200, json.toByteArray().size.toLong())
             exchange.responseBody.use { it.write(json.toByteArray()) }
         }
@@ -51,7 +51,7 @@ class CloudSyncClientTest {
             val client = CloudSyncClient()
             val manifest = SyncManifest(
                 deviceId = "desktop",
-                generatedAt = 456L,
+                createdAt = 456L,
                 entries = listOf(ManifestEntry("b.txt", "def", 20, 222L))
             )
             client.uploadManifest("http://localhost:${server.address.port}/manifest", manifest)
@@ -70,7 +70,7 @@ class CloudSyncClientTest {
         val server = HttpServer.create(InetSocketAddress(0), 0)
         server.createContext("/manifest") { exchange ->
             authHeader.set(exchange.requestHeaders.getFirst("Authorization") ?: "")
-            val json = """{"deviceId":"cloud","generatedAt":1,"entries":[]}"""
+            val json = """{"version":1,"deviceId":"cloud","createdAt":1,"entries":[]}"""
             exchange.sendResponseHeaders(200, json.toByteArray().size.toLong())
             exchange.responseBody.use { it.write(json.toByteArray()) }
         }
@@ -91,7 +91,7 @@ class CloudSyncClientTest {
     fun `uploadManifest throws CloudSyncException for invalid url`() {
         CloudSyncClient().uploadManifest(
             manifestUrl = "ftp://invalid",
-            manifest = SyncManifest("x", 0, emptyList())
+            manifest = SyncManifest(deviceId = "x", createdAt = 0, entries = emptyList())
         )
     }
 
