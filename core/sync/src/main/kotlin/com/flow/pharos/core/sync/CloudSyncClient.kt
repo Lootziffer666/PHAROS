@@ -16,9 +16,9 @@ import java.time.Duration
 class CloudSyncClient(
     private val httpClient: HttpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(15))
-        .build(),
-    private val gson: Gson = Gson()
+        .build()
 ) {
+    private val gson = Gson()
 
     fun downloadManifest(manifestUrl: String, bearerToken: String? = null): SyncManifest {
         return try {
