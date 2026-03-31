@@ -1,6 +1,4 @@
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 plugins {
     id("com.android.application")
@@ -19,12 +17,12 @@ fun localProp(key: String, default: String = "") =
 
 android {
     namespace = "com.flow.pharos"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.flow.pharos"
         minSdk = 27
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -48,12 +46,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-}
-
-configure<KotlinAndroidProjectExtension> {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
-    }
+    kotlinOptions { jvmTarget = "17" }
 }
 
 dependencies {
@@ -99,7 +92,7 @@ dependencies {
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")
 
-    // Material (View-based) — required for Theme.Material3.DayNight.NoActionBar in AndroidManifest
+    // Material (View-based) ? required for Theme.Material3.DayNight.NoActionBar in AndroidManifest
     implementation("com.google.android.material:material:1.12.0")
 
     // Testing
