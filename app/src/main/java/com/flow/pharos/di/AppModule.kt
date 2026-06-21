@@ -15,10 +15,14 @@ import com.flow.pharos.core.storage.repository.SettingsRepository
 import com.flow.pharos.provider.customopenai.CustomOpenAiProvider
 import com.flow.pharos.provider.ollama.OllamaProvider
 import com.flow.pharos.provider.perplexity.PerplexityProvider
+import com.flow.pharos.core.llm.LlmGateway
 import com.flow.pharos.usecase.AnalysisUseCase
+import com.flow.pharos.usecase.ClaimExtractionUseCase
+import com.flow.pharos.usecase.ConflictDetectionUseCase
 import com.flow.pharos.usecase.MasterfileUseCase
 import com.flow.pharos.usecase.ProjectClusteringUseCase
 import com.flow.pharos.usecase.ScanUseCase
+import com.flow.pharos.usecase.SsotPipelineUseCase
 import com.flow.pharos.util.PdfTextExtractor
 import com.flow.pharos.util.TextExtractor
 import dagger.Module
@@ -145,4 +149,39 @@ object AppModule {
         analysisRepo: AnalysisRepository,
         folderRepo: FolderRepository
     ): MasterfileUseCase = MasterfileUseCase(context, projectRepo, fileRepo, analysisRepo, folderRepo)
+
+    @Provides
+    @Singleton
+    fun provideLlmGateway(ollamaProvider: OllamaProvider): LlmGateway = ollamaProvider
+
+    @Provides
+    @Singleton
+    fun provideClaimExtractionUseCase(
+        llmGateway: LlmGateway
+    ): ClaimExtractionUseCase = ClaimExtractionUseCase(llmGateway)
+
+    @Provides
+    @Singleton
+    fun provideConflictDetectionUseCase(
+        claimRepo: ClaimRepository,
+        llmGateway: LlmGateway
+    ): ConflictDetectionUseCase = ConflictDetectionUseCase(claimRepo, llmGateway)
+
+    @Provides
+    @Singleton
+    fun provideSsotPipelineUseCase(
+        fileRepo: FileRepository,
+        analysisRepo: AnalysisRepository,
+        claimRepo: ClaimRepository,
+        claimExtractionUseCase: ClaimExtractionUseCase,
+        conflictDetectionUseCase: ConflictDetectionUseCase,
+        settingsRepo: SettingsRepository,
+        textExtractor: TextExtractor,
+        pdfExtractor: PdfTextExtractor,
+        @ApplicationContext context: Context
+    ): SsotPipelineUseCase = SsotPipelineUseCase(
+        fileRepo, analysisRepo, claimRepo,
+        claimExtractionUseCase, conflictDetectionUseCase,
+        settingsRepo, textExtractor, pdfExtractor, context
+    )
 }
