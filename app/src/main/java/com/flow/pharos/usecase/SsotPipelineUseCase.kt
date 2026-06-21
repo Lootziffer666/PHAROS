@@ -111,7 +111,8 @@ class SsotPipelineUseCase(
     }
 
     private fun resolveModel(): String {
-        return DEFAULT_MODEL
+        // Read the user-configured model from settings; fall back to default if not set
+        return settingsRepository.getLlmModel() ?: DEFAULT_MODEL
     }
 
     private fun extractText(file: FileEntity): String? {

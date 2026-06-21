@@ -152,7 +152,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLlmGateway(ollamaProvider: OllamaProvider): LlmGateway = ollamaProvider
+    fun provideLlmGateway(
+        ollamaProvider: OllamaProvider,
+        customOpenAiProvider: CustomOpenAiProvider,
+        settingsRepository: SettingsRepository
+    ): LlmGateway {
+        // Pick the LLM provider based on user configuration; default to Ollama for local inference
+        return when (settingsRepository.getLlmProviderType()) {
+            SettingsRepository.PROVIDER_CUSTOM_OPENAI -> customOpenAiProvider
+            else -> ollamaProvider
+        }
+    }
 
     @Provides
     @Singleton

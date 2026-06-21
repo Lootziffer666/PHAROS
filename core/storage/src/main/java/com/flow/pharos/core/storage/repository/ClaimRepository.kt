@@ -20,4 +20,16 @@ class ClaimRepository(private val claimDao: ClaimDao) {
     suspend fun countByStatus(status: ClaimStatus): Int = claimDao.countByStatus(status)
     suspend fun getClaimsByCluster(clusterId: String): List<ClaimEntity> = claimDao.getClaimsByCluster(clusterId)
     fun getClaimsForTimeline(): Flow<List<ClaimEntity>> = claimDao.getClaimsForTimeline()
+
+    /**
+     * Atomically approves a new claim and supersedes the old claim with bidirectional linking.
+     */
+    suspend fun approveAndSupersede(newClaim: ClaimEntity, oldClaim: ClaimEntity?) =
+        claimDao.approveAndSupersede(newClaim, oldClaim)
+
+    /**
+     * Atomically reverts a previous approval, restoring original claim states.
+     */
+    suspend fun revertApproval(approvedClaim: ClaimEntity, supersededClaim: ClaimEntity?) =
+        claimDao.revertApproval(approvedClaim, supersededClaim)
 }

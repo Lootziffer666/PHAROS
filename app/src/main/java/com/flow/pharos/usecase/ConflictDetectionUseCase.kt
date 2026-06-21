@@ -21,6 +21,10 @@ class ConflictDetectionUseCase(
 ) {
     private val gson = Gson()
 
+    // NOTE: Known limitation (issue #2) - If the pipeline runs concurrently for two files,
+    // one pass may not see the other's newly-approved claims during conflict checking, since
+    // approvedClaims is fetched once at the start. A future enhancement could serialize
+    // pipeline runs or re-read approved claims per iteration.
     suspend fun detectConflicts(pendingClaims: List<ClaimEntity>, model: String): ConflictDetectionResult {
         var autoMerged = 0
         var conflicts = 0
@@ -29,6 +33,10 @@ class ConflictDetectionUseCase(
         val approvedClaims = claimRepository.getAllClaimsList()
             .filter { it.status == ClaimStatus.APPROVED }
 
+        // NOTE: Known limitation (issue #6) - Conflict detection only compares within the same
+        // clusterId. Two claims that genuinely contradict but receive different cluster labels
+        // from the LLM will not be flagged. The cluster label is a best-effort optimization that
+        // trades recall for fewer LLM calls.
         val approvedByCluster = approvedClaims.groupBy { it.clusterId ?: "__unclustered__" }
 
         for (claim in pendingClaims) {

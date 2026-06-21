@@ -50,22 +50,8 @@ class ConflictResolutionViewModel @Inject constructor(
                 clusterClaims.firstOrNull { it.id != claim.id && it.status == ClaimStatus.APPROVED }
             } else null
 
-            // Approve the new claim
-            claimRepository.updateClaim(claim.copy(status = ClaimStatus.APPROVED))
-
-            // Supersede the old claim if found
-            if (supersededClaim != null) {
-                claimRepository.updateClaim(
-                    supersededClaim.copy(
-                        status = ClaimStatus.SUPERSEDED,
-                        supersededById = claim.id
-                    )
-                )
-                // Link the new claim to what it supersedes
-                claimRepository.updateClaim(
-                    claim.copy(status = ClaimStatus.APPROVED, supersedes = supersededClaim.id)
-                )
-            }
+            // Atomically approve the new claim and supersede the old one in a single transaction
+            claimRepository.approveAndSupersede(claim, supersededClaim)
 
             undoStack.add(UndoAction.Approved(claim, supersededClaim))
             _uiState.value = _uiState.value.copy(canUndo = true)
@@ -85,19 +71,8 @@ class ConflictResolutionViewModel @Inject constructor(
         viewModelScope.launch {
             when (val action = undoStack.removeAt(undoStack.lastIndex)) {
                 is UndoAction.Approved -> {
-                    // Revert the approved claim back to CONFLICT
-                    claimRepository.updateClaim(
-                        action.approvedClaim.copy(status = ClaimStatus.CONFLICT, supersedes = null)
-                    )
-                    // Revert the superseded claim if any
-                    if (action.supersededClaim != null) {
-                        claimRepository.updateClaim(
-                            action.supersededClaim.copy(
-                                status = ClaimStatus.APPROVED,
-                                supersededById = null
-                            )
-                        )
-                    }
+                    // Atomically revert the approval in a single transaction
+                    claimRepository.revertApproval(action.approvedClaim, action.supersededClaim)
                 }
                 is UndoAction.Rejected -> {
                     // Revert the rejected claim back to CONFLICT

@@ -59,7 +59,13 @@ private fun PharosMainContent() {
         }
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Screen.Dashboard.route, modifier = Modifier.padding(innerPadding)) {
-            composable(Screen.Dashboard.route) { DashboardScreen(hiltViewModel<DashboardViewModel>()) }
+            composable(Screen.Dashboard.route) {
+                DashboardScreen(
+                    hiltViewModel<DashboardViewModel>(),
+                    onNavigateToFolders = { navController.navigate(Screen.Folders.route) },
+                    onNavigateToProjects = { navController.navigate(Screen.Projects.route) }
+                )
+            }
             composable(Screen.Folders.route) { FolderScreen(hiltViewModel<FolderViewModel>()) }
             composable(Screen.Files.route) {
                 FilesScreen(hiltViewModel<FilesViewModel>()) { fileId -> navController.navigate(Screen.FileDetail.createRoute(fileId)) }

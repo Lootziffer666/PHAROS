@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.flow.pharos.core.model.entity.AnalysisEntity
 import com.flow.pharos.core.model.entity.ClaimEntity
 import com.flow.pharos.core.model.entity.FileEntity
@@ -44,6 +46,32 @@ abstract class PharosDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: PharosDatabase? = null
 
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """CREATE TABLE IF NOT EXISTS `claims` (
+                        `id` TEXT NOT NULL,
+                        `content` TEXT NOT NULL,
+                        `sourceFileId` TEXT NOT NULL,
+                        `sourceFileName` TEXT NOT NULL,
+                        `sourceTimestamp` INTEGER NOT NULL,
+                        `extractedAt` INTEGER NOT NULL,
+                        `status` TEXT NOT NULL DEFAULT 'PENDING',
+                        `confidence` REAL NOT NULL,
+                        `clusterId` TEXT,
+                        `supersededById` TEXT,
+                        `supersedes` TEXT,
+                        `aiRationale` TEXT,
+                        PRIMARY KEY(`id`),
+                        FOREIGN KEY(`sourceFileId`) REFERENCES `files`(`id`) ON DELETE CASCADE
+                    )"""
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_sourceFileId` ON `claims`(`sourceFileId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_status` ON `claims`(`status`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_claims_clusterId` ON `claims`(`clusterId`)")
+            }
+        }
+
         fun getInstance(context: Context): PharosDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -51,6 +79,7 @@ abstract class PharosDatabase : RoomDatabase() {
                     PharosDatabase::class.java,
                     "pharos_database"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }
