@@ -7,6 +7,7 @@ import com.flow.pharos.core.storage.BudgetRepository
 import com.flow.pharos.core.storage.SeedRepository
 import com.flow.pharos.core.storage.db.PharosDatabase
 import com.flow.pharos.core.storage.repository.AnalysisRepository
+import com.flow.pharos.core.storage.repository.ClaimRepository
 import com.flow.pharos.core.storage.repository.FileRepository
 import com.flow.pharos.core.storage.repository.FolderRepository
 import com.flow.pharos.core.storage.repository.ProjectRepository
@@ -75,6 +76,11 @@ object AppModule {
     @Singleton
     fun provideAnalysisRepository(database: PharosDatabase): AnalysisRepository =
         AnalysisRepository(database.analysisDao())
+
+    @Provides
+    @Singleton
+    fun provideClaimRepository(database: PharosDatabase): ClaimRepository =
+        ClaimRepository(database.claimDao())
 
     @Provides
     @Singleton

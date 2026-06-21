@@ -6,12 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.flow.pharos.core.model.entity.AnalysisEntity
+import com.flow.pharos.core.model.entity.ClaimEntity
 import com.flow.pharos.core.model.entity.FileEntity
 import com.flow.pharos.core.model.entity.FolderEntity
 import com.flow.pharos.core.model.entity.ProjectEntity
 import com.flow.pharos.core.model.entity.ProjectFileCrossRef
 import com.flow.pharos.core.storage.db.converter.Converters
 import com.flow.pharos.core.storage.db.dao.AnalysisDao
+import com.flow.pharos.core.storage.db.dao.ClaimDao
 import com.flow.pharos.core.storage.db.dao.FileDao
 import com.flow.pharos.core.storage.db.dao.FolderDao
 import com.flow.pharos.core.storage.db.dao.ProjectDao
@@ -23,9 +25,10 @@ import com.flow.pharos.core.storage.db.dao.ProjectFileCrossRefDao
         FileEntity::class,
         AnalysisEntity::class,
         ProjectEntity::class,
-        ProjectFileCrossRef::class
+        ProjectFileCrossRef::class,
+        ClaimEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -35,6 +38,7 @@ abstract class PharosDatabase : RoomDatabase() {
     abstract fun analysisDao(): AnalysisDao
     abstract fun projectDao(): ProjectDao
     abstract fun projectFileCrossRefDao(): ProjectFileCrossRefDao
+    abstract fun claimDao(): ClaimDao
 
     companion object {
         @Volatile
