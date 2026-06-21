@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.flow.pharos.ui.viewmodel.DashboardViewModel
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel) {
+fun DashboardScreen(viewModel: DashboardViewModel, onNavigateToFolders: () -> Unit = {}, onNavigateToProjects: () -> Unit = {}) {
     val totalFiles by viewModel.totalFileCount.collectAsState()
     val changedFiles by viewModel.changedFileCount.collectAsState()
     val analyzedFiles by viewModel.analyzedFileCount.collectAsState()
@@ -80,6 +80,16 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
         if (!hasApiKey) {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                 Text("No API key configured. Go to Settings.", modifier = Modifier.padding(12.dp), color = MaterialTheme.colorScheme.onErrorContainer)
+            }
+        }
+
+        // Quick access to Folders and Projects
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(onClick = onNavigateToFolders, modifier = Modifier.weight(1f)) {
+                Text("Folders")
+            }
+            OutlinedButton(onClick = onNavigateToProjects, modifier = Modifier.weight(1f)) {
+                Text("Projects")
             }
         }
     }

@@ -75,12 +75,32 @@ class SettingsRepository(context: Context) {
     fun setApiProviderType(provider: String) =
         securePrefs.edit().putString(KEY_API_PROVIDER, provider).apply()
 
+    fun getLlmModel(): String? = try {
+        securePrefs.getString(KEY_LLM_MODEL, null)
+    } catch (e: Exception) {
+        Log.w(TAG, "Failed to read LLM model", e)
+        null
+    }
+
+    fun setLlmModel(model: String) =
+        securePrefs.edit().putString(KEY_LLM_MODEL, model).apply()
+
+    fun getLlmProviderType(): String =
+        securePrefs.getString(KEY_LLM_PROVIDER, PROVIDER_OLLAMA) ?: PROVIDER_OLLAMA
+
+    fun setLlmProviderType(provider: String) =
+        securePrefs.edit().putString(KEY_LLM_PROVIDER, provider).apply()
+
     companion object {
         private const val TAG = "SettingsRepository"
         private const val PREFS_FILE = "pharos_secure_prefs"
         private const val KEY_API_KEY = "ai_api_key"
         private const val KEY_ONLY_CHANGED = "only_changed_files"
         private const val KEY_API_PROVIDER = "api_provider"
+        private const val KEY_LLM_MODEL = "llm_model"
+        private const val KEY_LLM_PROVIDER = "llm_provider"
         const val PROVIDER_PERPLEXITY = "perplexity"
+        const val PROVIDER_OLLAMA = "ollama"
+        const val PROVIDER_CUSTOM_OPENAI = "custom_openai"
     }
 }
