@@ -76,6 +76,8 @@ private fun PharosMainContent() {
                 ProjectDetailScreen(projectId, hiltViewModel<ProjectsViewModel>()) { navController.popBackStack() }
             }
             composable(Screen.Settings.route) { NewSettingsScreen(hiltViewModel<SettingsViewModel>()) }
+            composable(Screen.Conflicts.route) { ConflictResolutionScreen(hiltViewModel<ConflictResolutionViewModel>()) }
+            composable(Screen.Timeline.route) { TimelineScreen(hiltViewModel<TimelineViewModel>()) }
         }
     }
 }
